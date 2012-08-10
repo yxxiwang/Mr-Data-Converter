@@ -243,11 +243,13 @@ var DataGridRenderer = {
           var rowOutput = '"' + ( row[j] || "" ) + '"';
           //var rowOutput = row[j] || "null";
         };
-  		if (j == 0) {
-      	outputText += (headerNames[j] + ":" + rowOutput );
-      }else{
-      	outputText += (headerNames[j] + " " + rowOutput );
-  	  }
+  		
+      	if (j == 0) {
+      		outputText += (headerNames[j] + ":" + row[j] );
+      	}else{
+      		outputText += (headerNames[j] + " " + rowOutput );
+  	  	}
+  	  	
         //if (j < (numColumns-1)) {outputText+=","};
         if (j < (numColumns-1)) {outputText+="  "};
       };
