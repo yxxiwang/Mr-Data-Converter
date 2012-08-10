@@ -199,7 +199,6 @@ var DataGridRenderer = {
     var outputText = "";
     var numRows = dataGrid.length;
     var numColumns = headerNames.length;
-    
     //begin render loop
     outputText += "["+newLine;
     for (var i=0; i < numRows; i++) {
@@ -217,6 +216,46 @@ var DataGridRenderer = {
     };
     outputText += newLine+"]";
     
+    
+    return outputText;
+  },
+  
+  //---------------------------------------
+  // Redis CMD of Rows
+  //---------------------------------------
+  redis: function (dataGrid, headerNames, headerTypes, indent, newLine) { 
+    //inits...
+    var commentLine = "//";
+    var commentLineEnd = "";
+    var outputText = " ";
+    var numRows = dataGrid.length;
+    var numColumns = headerNames.length;
+    
+    //begin render loop
+    for (var i=0; i < numRows; i++) {
+      var row = dataGrid[i];
+      //outputText += "{";
+      outputText += "hmset ";
+      for (var j=0; j < numColumns; j++) {
+        if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
+          var rowOutput = row[j] || "null";
+        } else {
+          var rowOutput = '"' + ( row[j] || "" ) + '"';
+          //var rowOutput = row[j] || "null";
+        };
+  		if (j == 0) {
+      	outputText += (headerNames[j] + ":" + rowOutput );
+      }else{
+      	outputText += (headerNames[j] + " " + rowOutput );
+  	  }
+        //if (j < (numColumns-1)) {outputText+=","};
+        if (j < (numColumns-1)) {outputText+="  "};
+      };
+      //outputText += "}";
+      //if (i < (numRows-1)) {outputText += ","+newLine};
+      if (i < (numRows-1)) {outputText += "      "+newLine};
+    };
+    //outputText += "]";
     
     return outputText;
   },
