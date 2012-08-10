@@ -248,7 +248,7 @@ var DataGridRenderer = {
       		outputText += (headerNames[j] + ":" + row[j] );
       	}else{
       		outputText += (headerNames[j] + " " + rowOutput );
-  	  	}
+  	  	} 
   	  	
         //if (j < (numColumns-1)) {outputText+=","};
         if (j < (numColumns-1)) {outputText+="  "};

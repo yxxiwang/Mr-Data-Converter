@@ -4,9 +4,7 @@
 //  
 //  Created by Shan Carter on 2010-09-01.
 // 
-
-
-
+ 
 function DataConverter(nodeId) {
 
   //---------------------------------------
@@ -29,7 +27,7 @@ function DataConverter(nodeId) {
                                 {"text":"Ruby",                   "id":"ruby",             "notes":""},
                                 {"text":"XML - Properties",       "id":"xmlProperties",    "notes":""},
                                 {"text":"XML - Nodes",            "id":"xml",              "notes":""},
-                                {"text":"Redis->Hash",      				"id":"redis",            "notes":""}];
+                                {"text":"Redis->Hash",            "id":"redis",            "notes":""}];
   this.outputDataType         = "redis";
   
   this.columnDelimiter        = "\t";
