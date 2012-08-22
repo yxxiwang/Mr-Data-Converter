@@ -27,8 +27,11 @@ function DataConverter(nodeId) {
                                 {"text":"Ruby",                   "id":"ruby",             "notes":""},
                                 {"text":"XML - Properties",       "id":"xmlProperties",    "notes":""},
                                 {"text":"XML - Nodes",            "id":"xml",              "notes":""},
-                                {"text":"Redis->Hash",            "id":"redis",            "notes":""}];
-  this.outputDataType         = "redis";
+                                {"text":"Redis_Hash->Key_Row",    "id":"redis_row",        "notes":""},
+                                {"text":"Redis_Hash->Key_Col",    "id":"redis_col",        "notes":""},
+                                {"text":"Redis_Hash->Mul_Row",    "id":"redis_mul_row",    "notes":""},
+                                {"text":"Redis_Hash->Mul_Col",    "id":"redis_mul_col",    "notes":""}];
+  this.outputDataType         = "redis_mul_col";
   
   this.columnDelimiter        = "\t";
   this.rowDelimiter           = "\n";

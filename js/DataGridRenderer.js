@@ -223,7 +223,7 @@ var DataGridRenderer = {
   //---------------------------------------
   // Redis CMD of Rows
   //---------------------------------------
-  redis: function (dataGrid, headerNames, headerTypes, indent, newLine) { 
+  redis_row: function (dataGrid, headerNames, headerTypes, indent, newLine) { 
     //inits...
     var commentLine = "//";
     var commentLineEnd = "";
@@ -236,11 +236,13 @@ var DataGridRenderer = {
       var row = dataGrid[i];
       //outputText += "{";
       outputText += "hmset ";
-      for (var j=0; j < numColumns; j++) {
+      for (var j=0; j < numColumns; j++) { 
         if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
-          var rowOutput = row[j] || "null";
+          //var rowOutput = row[j] || "null";
+          var rowOutput = $.trim(row[j]) || "null";
         } else {
-          var rowOutput = '"' + ( row[j] || "" ) + '"';
+          var rowOutput = '"' + ( row[j] || "" ) + '"' || "null";
+        	if ($.trim(row[j]) == "" ) {rowOutput ="null"}; 
           //var rowOutput = row[j] || "null";
         };
   		
@@ -262,7 +264,141 @@ var DataGridRenderer = {
     return outputText;
   },
   
+  //---------------------------------------
+  // Redis CMD of Columns
+  //---------------------------------------
+  redis_col: function (dataGrid, headerNames, headerTypes, indent, newLine) { 
+    //inits...
+    var commentLine = "//";
+    var commentLineEnd = "";
+    var outputText = "";
+    var numRows = dataGrid.length;
+    var numColumns = headerNames.length;
+    
+    
+    for (var j=1; j < numColumns; j++) {
+      outputText += "hmset ";  
+      outputText += (headerNames[0] + ":" + headerNames[j] + "   "); 
+      
+      for (var i=0; i < numRows; i++) {
+      	var row = dataGrid[i];
+      	//var rowOutput = '"' + ( row[j] || "" ) + '"'; 
+        if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
+          var rowOutput = $.trim(row[j]) || "null";
+        } else {
+          var rowOutput = '"' + ( row[j] || "" ) + '"'; 
+        	if ($.trim(row[j]) == "" || row[j] == null) { rowOutput ="null"}; 
+        }
+        
+      		outputText += (row[0] + " " + rowOutput ); 
+  	  	//break;
+      		outputText += "  ";
+      }
+      //break;
+      	if (j < (numColumns-1)) {outputText += "      "+newLine};
+    } 
+    return outputText;
+  },
+  //---------------------------------------
+  // Redis CMD of Rows
+  //---------------------------------------
+  redis_mul_row: function (dataGrid, headerNames, headerTypes, indent, newLine) { 
+    //inits...
+    var commentLine = "//";
+    var commentLineEnd = "";
+    var outputText = " ";
+    var numRows = dataGrid.length;
+    var numColumns = headerNames.length;
+    var arr = ["AUD","ATS","BEF","CAD","RMB","TWD","DKK","FIM","FRF","DEM","HKD","ITL","JPY","MOP","MYR","NLG","NZD","NOK","PHP","SGD","ESA","RKS","SEK","THB","GBP","USD","EUR","KRW","ESP","CHF"];
+      
+    var hCCY = "";
+    //begin render loop
+    for (var i=0; i < numRows; i++) {
+      var row = dataGrid[i];
+      
+      if (row[0] == ""){continue;}
+ 
+      if($.inArray(row[0],arr) != "-1"){
+          hCCY = row[0]+":";
+          outputText += "      "+newLine
+          continue;
+      }
+      
+      outputText += "hmset ";
+      /**/
+      for (var j=0; j < numColumns; j++) {
+        if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
+          var rowOutput = $.trim(row[j]) || "null";
+         } else {
+          var rowOutput = '"' + ( row[j] || "" ) + '"' || "null";
+        	if ($.trim(row[j]) == "" || row[j] == null) { rowOutput ="null"}; 
+        } 
+  		  
+      	if (j == 0) {
+      		outputText += (headerNames[j] + ":" + hCCY + row[j] );
+      	}else{
+      		outputText += (headerNames[j] + " " + rowOutput );
+  	  	} 
+  	  	
+        //if (j < (numColumns-1)) {outputText+=","};
+        if (j < (numColumns-1)) {outputText+="  "};
+      };
+      //outputText += "}";
+      //if (i < (numRows-1)) {outputText += ","+newLine};
+      if (i < (numRows-1)) {outputText += "      "+newLine};
+    };
+    //outputText += "]";
+    
+    return outputText;
+  },
   
+  //---------------------------------------
+  // Redis CMD of Columns
+  //---------------------------------------
+  redis_mul_col: function (dataGrid, headerNames, headerTypes, indent, newLine) { 
+    //inits...
+    var commentLine = "//";
+    var commentLineEnd = "";
+    var outputText = "";
+    var numRows = dataGrid.length;
+    var numColumns = headerNames.length;
+    var arr = ["AUD","ATS","BEF","CAD","RMB","TWD","DKK","FIM","FRF","DEM","HKD","ITL","JPY","MOP","MYR","NLG","NZD","NOK","PHP","SGD","ESA","RKS","SEK","THB","GBP","USD","EUR","KRW","ESP","CHF"];
+    var hCCY = "";
+    
+    for (var j=1; j < numColumns; j++) {
+      //outputText += "hmset ";  
+      //key = (headerNames[0] + ":" + headerNames[j] + "   "); 
+      //outputText += key; 
+      
+      for (var i=0; i < numRows; i++) {
+      	var row = dataGrid[i];
+      	if ($.trim(row[0]) == "" ){continue;}//空行跳过
+ 
+      	if($.inArray(row[0],arr) != "-1"){//该行第一格数据在币种数组中存在,视为key的表头
+          hCCY = row[0]+":";
+          outputText += "      "+newLine
+          outputText += "hmset ";  
+      		key = (headerNames[0] + ":" + hCCY + headerNames[j] + "   "); 
+      		outputText += key; 
+          continue;
+      	}
+      	//var rowOutput = '"' + ( row[j] || "" ) + '"'; 
+        if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
+          var rowOutput = $.trim(row[j]) || "null";
+        } else {
+          var rowOutput = '"' + ( row[j] || "" ) + '"'; 
+        	if ($.trim(row[j]) == "" || row[j] == null) { rowOutput ="null"}; 
+        }
+        
+      		outputText += (row[0] + " " + rowOutput ); 
+  	  	//break;
+      		outputText += "  ";
+      }
+      //break;
+      	if (j < (numColumns-1)) {outputText += "      "+newLine};
+    } 
+    return outputText;
+  },  
   //---------------------------------------
   // MYSQL
   //---------------------------------------
